@@ -1,0 +1,36 @@
+.trusted-partners {
+  padding-top: 30px;
+  position: relative;
+  padding-bottom: 30px;
+}
+.trusted-partners-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.trusted-partners-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  h2 {
+    font-size: 3rem;
+    font-weight: bold;
+  }
+  p {
+    font-size: 1.5rem;
+  }
+}
+
+.trusted-partners-images {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding-top: 30px;
+}
+
+.trusted-partners-images img {
+  width: 100px;
+}

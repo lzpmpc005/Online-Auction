@@ -1,0 +1,25 @@
+.bid-navbar-container {
+  position: relative;
+}
+
+.bid-navbar {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  z-index: 999;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  height: 80px;
+  padding: 0 20px;
+  margin-top: 20px;
+  background: white;
+  button {
+    margin-left: 10px;
+    border: 1px solid silver;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
+    background-color: white;
+    color: black;
+    border-radius: 7px;
+    padding: 5px 10px;
+  }
+}
