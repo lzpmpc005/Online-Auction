@@ -1,25 +1,28 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
-class Product(models.Model):
-    name = models.CharField(max_length=100)
+class Item(models.Model):
+    name = models.CharField(max_length=255)
     description = models.TextField()
-    initial_price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to="product_images/", null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
-class Listing(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    seller = models.ForeignKey(User, on_delete=models.CASCADE)
-    current_price = models.DecimalField(max_digits=10, decimal_places=2)
-    start_time = models.DateTimeField(auto_now_add=True)
+    start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-
+    start_price = models.DecimalField(max_digits=9, decimal_places=2)
 
 class Bid(models.Model):
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
-    bidder = models.ForeignKey(User, on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    item = models.ForeignKey(Item, related_name='bids', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    bid_amount = models.DecimalField(max_digits=9, decimal_places=2)
+    bid_time = models.DateTimeField(auto_now_add=True)
+
+    def create(cls, item, user, bid_amount):
+        bid = cls(item=item, user=user, bid_amount=bid_amount)
+        bid.save()
+        return bid
+
+class Comment(models.Model):
+    item = models.ForeignKey(Item, related_name='comments', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+    replies = models.ManyToManyField('self', symmetrical=False, related_name='reply_to')
+

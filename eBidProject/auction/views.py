@@ -1,27 +1,27 @@
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from .serializers import ListingSerializer
+from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
+from .models import Item, Bid, Comment
+from .serializers import ItemSerializer, BidSerializer, CommentSerializer
+from django.contrib.auth.models import User
+class ItemViewSet(viewsets.ModelViewSet):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
-@api_view(["POST"])
-def create_listing(request):
-    serializer = ListingSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class BidViewSet(viewsets.ModelViewSet):
+    queryset = Bid.objects.all()
+    serializer_class = BidSerializer
 
+    def perform_create(self, serializer):
+        item = get_object_or_404(Item, pk=self.kwargs.get('item_pk'))
+        serializer.save(bidder=self.request.user, item=item)
 
-@api_view(["GET"])
-def get_listings(request):
-    listings = Listing.objects.all()
-    serializer = ListingSerializer(listings, many=True)
-    return Response(serializer.data)
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
 
-
-@api_view(["GET"])
-def get_listing(request, pk):
-    listing = Listing.objects.get(pk=pk)
-    serializer = ListingSerializer(listing)
-    return Response(serializer.data)
+    def perform_create(self, serializer):
+        item = get_object_or_404(Item, pk=self.kwargs.get('item_pk'))
+        serializer.save(author=self.request.user, item=item)

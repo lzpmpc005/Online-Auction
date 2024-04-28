@@ -1,8 +1,17 @@
 from rest_framework import serializers
-from .models import Listing
+from .models import Item, Bid, Comment
 
-
-class ListingSerializer(serializers.ModelSerializer):
+class ItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Listing
-        fields = "__all__"
+        model = Item
+        fields = '__all__'
+
+class BidSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bid
+        fields = '__all__'
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = '__all__'
