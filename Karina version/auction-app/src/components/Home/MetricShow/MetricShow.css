@@ -1,0 +1,45 @@
+.metric-show-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+.metric-show-header {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.metric-show-description {
+  font-size: 1.2rem;
+  margin: 0.5em 0 30px 0;
+  text-align: center;
+}
+
+.metric-card-container {
+  margin: 0 01em;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.metric-card {
+  margin: 1em;
+  display: flex;
+  padding: 1em;
+  flex-grow: 1;
+  background: linear-gradient(45deg, white, #f5f5f5);
+  box-shadow: 0px 19px 30px -10px rgba(21, 21, 25, 0.21);
+  box-sizing: border-box;
+
+  flex-basis: 0;
+  text-align: center;
+  align-items: center;
+  border-color: #f5f5f5;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 10px;
+  flex-direction: column;
+  
+}
