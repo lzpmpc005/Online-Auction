@@ -11,18 +11,18 @@ const Listing = () => {
 
   useEffect(() => {
     const username = localStorage.getItem("username");
+
     const ws = new WebSocket(
       "ws://localhost:8000/ws/presence/" + username + "/"
     );
 
     ws.onopen = () => {
-      console.log("connected");
       ws.send(JSON.stringify({ username: username }));
     };
     ws.onmessage = (event) => {
       const message = JSON.parse(event.data);
       console.log(message);
-      setOnlineUsers(message.users);
+      setOnlineUsers([...message.users]);
     };
 
     return () => {

@@ -13,7 +13,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Listing)
 class ListingAdmin(admin.ModelAdmin):
-    list_display = ("product_name", "current_price", "start_time", "end_time")
+    list_display = ("product_name", "current_price", "start_time", "end_time", "seller")
     list_filter = ("product", "current_price", "start_time", "end_time")
     search_fields = ("product", "current_price", "start_time", "end_time")
 

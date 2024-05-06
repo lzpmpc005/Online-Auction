@@ -14,6 +14,7 @@ import Listing from "./components/Listing/Listing";
 import Login from "./components/Login/Login";
 import Logout from "./components/Login/Logout";
 import "./interceptors/axios.js";
+import MyCabinetPage from "./components/MyCabinetPage/MyCabinetPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
   {
     path: "/logout",
     element: <Logout />,
+  },
+  {
+    path: "/my-cabinet",
+    element: <MyCabinetPage />,
   },
 ]);
 

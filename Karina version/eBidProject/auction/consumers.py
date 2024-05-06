@@ -5,9 +5,7 @@ import json
 class AuctionConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.group_name = "auction_group"
-
         await self.channel_layer.group_add(self.group_name, self.channel_name)
-
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -24,16 +22,17 @@ class AuctionConsumer(AsyncJsonWebsocketConsumer):
 
 class OnlineUsers(WebsocketConsumer):
     connections = []
-    users_name = []
+    users_name = set()
 
     def connect(self):
         self.accept()
-        print(self.scope)
         self.user = self.scope["url_route"]["kwargs"]["username"]
+        if self.user != 'null':
+            self.users_name.add(self.user)
         self.connections.append(self)
-        self.users_name.append(self.user)
         self.update_indicator(msg="connected")
 
+    #TODO fix connection and users name remove from set and list
     def disconnect(self, close_code):
         self.update_indicator(msg="disconnected")
         self.connections.remove(self)
@@ -41,13 +40,12 @@ class OnlineUsers(WebsocketConsumer):
 
     def update_indicator(self, msg):
         for connection in self.connections:
-            print(connection)
             connection.send(
                 text_data=json.dumps(
                     {
                         "msg": f"{self.user} {msg}",
                         "online": f"{len(self.connections)}",
-                        "users": self.users_name,
+                        "users": list(self.users_name),
                     }
                 )
             )

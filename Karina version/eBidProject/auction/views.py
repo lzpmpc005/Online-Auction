@@ -23,6 +23,32 @@ def get_products(request):
     return Response(serializer.data)
 
 
+@api_view(["GET"])
+def get_product(request, pk):
+    product = Product.objects.get(pk=pk)
+    serializer = ProductSerializer(product)
+    return Response(serializer.data)
+
+
+@api_view(["UPDATE"])
+@permission_classes([IsAuthenticated])
+def update_product(request, pk):
+    product = Product.objects.get(pk=pk)
+    serializer = ProductSerializer(product, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_product(request, pk):
+    product = Product.objects.get(pk=pk)
+    product.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def create_listing(request):
@@ -47,10 +73,31 @@ def get_listing(request, pk):
     return Response(serializer.data)
 
 
+@api_view(["UPDATE"])
+@permission_classes([IsAuthenticated])
+def update_listing(request, pk):
+    listing = Listing.objects.get(pk=pk)
+    serializer = ListingSerializer(listing, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# if user delete listing it will be deleted and product will be deleted
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_listing(request, pk):
+    listing = Listing.objects.get(pk=pk)
+    product = listing.product
+    product.delete()
+    listing.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def user_listings(request, user_id):
-    listings = Listing.objects.prefetch_related("product").all()
-
+    listings = Listing.objects.prefetch_related("product").filter(seller=user_id)
     serializer = ListingSerializer(listings, many=True)
     return Response(serializer.data)

@@ -25,8 +25,10 @@ function AuctionNavbar() {
             <Nav.Link href="/listings">Start Selling</Nav.Link>
             {isAuth ? (
               <>
-                <Nav.Link href="#my-cabinet">My Cabinet</Nav.Link>
-                <Button href="/logout" className="button-link">Logout</Button>
+                <Nav.Link href="/my-cabinet">My Cabinet</Nav.Link>
+                <Button href="/logout" className="button-link">
+                  Logout
+                </Button>
               </>
             ) : (
               <>
