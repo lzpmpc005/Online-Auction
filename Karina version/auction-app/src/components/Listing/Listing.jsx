@@ -2,34 +2,69 @@ import { useState, useEffect } from "react";
 import { Image, Row, Col, Button, Form } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import "./Listing.css";
+import { createBid } from "../../api/auctions/auctions";
 
 const Listing = () => {
   const { id, current_price, product, seller, start_time, end_time } =
     useLocation().state;
 
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const [ws, setWs] = useState(null);
+  const [currentPrice, setCurrentPrice] = useState(current_price);
+  const [bidsList, setBidsList] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const username = localStorage.getItem("username");
-
-    const ws = new WebSocket(
-      "ws://localhost:8000/ws/presence/" + username + "/"
+    const newWs = new WebSocket(
+      "ws://localhost:8000/ws/presence/" + username + "/" + id + "/"
     );
 
-    ws.onopen = () => {
-      ws.send(JSON.stringify({ username: username }));
-    };
-    ws.onmessage = (event) => {
+    newWs.onmessage = (event) => {
       const message = JSON.parse(event.data);
       console.log(message);
-      setOnlineUsers([...message.users]);
+      setCurrentPrice(message.current_price || current_price);
+      setBidsList(message.all_bids || []);
+      if (message.users) {
+        setBidsList(message.all_bids || []);
+        setCurrentPrice(message.current_price || current_price);
+        setOnlineUsers([...message.users]);
+      }
     };
 
+    setWs(newWs);
+
     return () => {
-      ws.close();
-      setOnlineUsers([]);
+      if (newWs) {
+        newWs.close();
+      }
     };
   }, []);
+
+  const makeBid = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const formProps = Object.fromEntries(formData);
+    console.log(currentPrice);
+    if (Number(formProps.amount) < Number(currentPrice)) {
+      setError("Bid amount must be greater than current price");
+      return;
+    }
+    setError("");
+
+    const bid = {
+      action: "bid",
+      amount: formProps.amount,
+      listing: id,
+      user: localStorage.getItem("user_id"),
+    };
+    console.log(bid);
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      createBid(ws, bid);
+    }
+
+    e.target.reset();
+  };
 
   return (
     <>
@@ -69,16 +104,30 @@ const Listing = () => {
               <div className="listing-bids">
                 <div className="listing-active-bids">
                   <h3>Active Bids</h3>
+                  <ul>
+                    {bidsList
+                      .map((bid, index) => <li key={index}>{bid}</li>)
+                      .reverse()}
+                  </ul>
                 </div>
+                {error && <div className="listing-error">{error}</div>}
+
                 <div className="listing-bid-form">
-                  <h3>COST: {current_price}</h3>
-                  <Form>
+                  <h3>COST: {currentPrice}</h3>
+                  <Form onSubmit={makeBid}>
                     <Form.Group className="mb-3" controlId="yourBid">
                       <Form.Label>Your Bid</Form.Label>
-                      <Form.Control type="number" />
+                      <Form.Control
+                        type="number"
+                        name="amount"
+                        placeholder={+currentPrice + 50}
+                        required
+                      />
+                      <Button variant="success" className="my-3" type="submit">
+                        Place Bid
+                      </Button>
                     </Form.Group>
                   </Form>
-                  <Button variant="success">Place Bid</Button>
                 </div>
               </div>
             </Col>

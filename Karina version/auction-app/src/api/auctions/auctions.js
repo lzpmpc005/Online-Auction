@@ -74,3 +74,9 @@ export async function deleteListing(id, token) {
 
   return response.status;
 }
+
+export function createBid(ws, bid) {
+  ws.send(JSON.stringify(bid));
+
+  return true;
+}
